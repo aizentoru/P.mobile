@@ -1,0 +1,69 @@
+package com.example.login;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.EditText;
+
+import androidx.annotation.Nullable;
+
+public class DBHelper extends SQLiteOpenHelper {
+
+    public static final String DBNAME="login.db";
+    public DBHelper( Context context) {
+        super(context, "login.db", null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("create table users(nim TEXT primary key, nama TEXT, password TEXT)");
+
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVerson, int newVersion) {
+        db.execSQL("drop table if exists users");
+
+    }
+
+    public Boolean InsertData(String nim, String nama, String password){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("NIM", nim);
+        values.put("nama",nama);
+        values.put("password",password);
+
+        long result = db.insert("users", null, values);
+        if(result==1) return false;
+        else
+            return true;
+    }
+    public Boolean checknim(String nim){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from users where nim=?", new String[] {nim});
+        if(cursor.getCount()>0)
+            return true;
+        else
+            return false;
+    }
+    public Boolean checknimnama(String nim, String nama){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from users where nim=? and nama=?", new String[] {nim,nama});
+        if(cursor.getCount()>0)
+            return true;
+        else
+            return false;
+    }
+    public Boolean checknimnamapass(String nim, String nama, String password){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from users where nim=? and nama=? and password=?", new String[] {nim,nama,password});
+        if(cursor.getCount()>0)
+            return true;
+        else
+            return false;
+    }
+
+}
